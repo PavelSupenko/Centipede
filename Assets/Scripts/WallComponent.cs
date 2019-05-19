@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class WallComponent : MonoBehaviour {
 
-	// Use this for initialization
+    private Animator _thisAnimator;
+    private BoxCollider2D _thisCollider;
+    private Transform _thisTransform;
+
 	void Start () {
-		gameObject.AddComponent<BoxCollider2D>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        _thisTransform = transform;
+        _thisTransform.rotation *= Quaternion.Euler(0,0,90 * Random.Range(0,4));
+
+        _thisAnimator = GetComponent<Animator>();
+        //_thisCollider = gameObject.AddComponent<BoxCollider2D>();
+        _thisCollider = gameObject.GetComponent<BoxCollider2D>();
+    }
+
+    public void OnDeath()
+    {
+        Destroy(_thisCollider);
+        transform.rotation *= Quaternion.Euler(0, 0, Random.Range(0, 360));
+        _thisAnimator.SetTrigger("Explode");
+    }
 }

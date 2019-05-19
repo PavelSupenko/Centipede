@@ -5,19 +5,30 @@ using UnityEngine;
 public class BulletComponent : MonoBehaviour {
 
     [SerializeField] private int _damage;
+    private Camera _camera;
+    private Transform _thisTransform;
 
     private void Start()
     {
-        Destroy(this.gameObject, 10f);
+        _camera = Camera.main;
+        _thisTransform = transform;
     }
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        Debug.Log("Hurted");
-        DamageableObject Dobj = col.GetComponent<DamageableObject>();
-        if(Dobj != null)
+        DamageableObject DamageObj = col.GetComponent<DamageableObject>();
+        if(DamageObj != null)
         {
-            Dobj.Damage(_damage);
+            DamageObj.Damage(_damage);
+            Destroy(this.gameObject); 
+        }
+    }
+
+    private void Update()
+    {
+        if(_camera.WorldToViewportPoint(_thisTransform.position).y > 1.5)
+        {
+            Destroy(this.gameObject);
         }
     }
 }

@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public static class FieldSettings
+{
+    public static float CellSize;
+}
+
 public class WallController : MonoBehaviour {
 
     [SerializeField] private Camera _camera;
@@ -12,9 +17,10 @@ public class WallController : MonoBehaviour {
     [Range(0f,1f)]
     public float Probability;
 
-	void Start () {
+	void Awake () {
         Vector3 position;
-        float cellSize = (_camera.ViewportToWorldPoint(new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / CellCount.x * 0.7f;
+        FieldSettings.CellSize = (_camera.ViewportToWorldPoint(new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / CellCount.x;
+        float cellSize = FieldSettings.CellSize * 0.4f;
 
         float shiftX = 1f / CellCount.x;
         float shiftY = 1f / CellCount.y;

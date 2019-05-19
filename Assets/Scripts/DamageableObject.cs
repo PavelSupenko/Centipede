@@ -5,6 +5,7 @@ using UnityEngine;
 public class DamageableObject : MonoBehaviour {
 
     [SerializeField] private int _health;
+    [SerializeField] private float _deathTime;
     private Coroutine _deathRoutine;
     
     public void Damage(int damage)
@@ -19,7 +20,8 @@ public class DamageableObject : MonoBehaviour {
 
     private IEnumerator Death()
     {
+        gameObject.SendMessage("OnDeath");
+        yield return new WaitForSeconds(_deathTime);
         Destroy(this.gameObject);
-        yield break;
     }
 }
