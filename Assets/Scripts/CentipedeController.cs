@@ -1,105 +1,168 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 public class CentipedeController : MonoBehaviour {
-    
+    [Range(0.25f, 0.6f)]
+    public float timeCoefficient;
+    public float positionUpdateTime;
+    public Transform[] tail;
+    private List<Vector3> _wayPoints;
     private Transform _thisTransform;
-    private Vector2 _direction;
-    private Coroutine _currentCoroutine;
-    public float speed;
+    private CentipedeSection _thisSection;
+    private int _sectionCount;
+    private Vector2 _direction = Vector2.right;
 
-    public CentipedeSection _nextSection;
-    public int ID { get; set; }
-    public int sectionCount;
-    private Dot _startDot;
-    private Dot _lastDot;
+    private void Awake()
+    {
+        _wayPoints = new List<Vector3>();
+        _thisTransform = transform;
+        _thisSection = GetComponent<CentipedeSection>();
+        if (_thisSection != null)
+            _thisSection.enabled = false;
+
+        if (tail != null)
+        {
+            _sectionCount = tail.Length;
+            CentipedeSection tmpSection;
+            for (int i = 0; i < _sectionCount; i++)
+            {
+                tmpSection = tail[i].GetComponent<CentipedeSection>();
+                tmpSection.Head = this;
+                tmpSection.SectionIndex = i;
+            }
+        }
+    }
 
     private void Start()
     {
-        _thisTransform = transform;
-        _direction = _thisTransform.right;
-        _nextSection.SetValues(speed, ID);
-        _currentCoroutine = StartCoroutine(GoRight());
-        _startDot = new Dot(_thisTransform.position, Vector2.down, ID);
+        StartCoroutine(MoveCentipede());
     }
 
-    private void OnDisable()
+    public void SetDirection(Vector2 d)
+    {
+        _direction = d;
+    }
+
+    public void SetUpdateTime(float t)
+    {
+        positionUpdateTime = t;
+    }
+
+    public void SetTail(Transform[] newTail)
+    {
+        tail = newTail;
+        _sectionCount = tail.Length;
+        CentipedeSection tmpSection;
+        for (int i = 0; i < _sectionCount; i++)
+        {
+            tmpSection = tail[i].GetComponent<CentipedeSection>();
+            tmpSection.Head = this;
+            tmpSection.SectionIndex = i;
+        }
+    }
+
+    public void Split(int deadSectionIndex)
     {
         StopAllCoroutines();
-    }
 
-    private void OnEnable()
-    {
-        if(_currentCoroutine != null)
-            StartCoroutine(GoRight());
-    }
+        Transform[] firstTail = tail.Take(deadSectionIndex).ToArray();
+        Transform[] secondTail = tail.Skip(deadSectionIndex + 1).ToArray();
+        tail = firstTail;
+        _sectionCount = tail.Length;
+        RemoveExcessPoint();
+        StartCoroutine(MoveCentipede());
 
-    private void AddNewRotationPoint(Vector2 direction)
-    {
-        if (_lastDot != null && Vector3.Distance(_thisTransform.position, _lastDot.position) < 0.1f)
+        if (secondTail.Length > 0)
         {
-            Debug.Log("Changed Rotation");
-            _lastDot.direction = direction;
+            CentipedeController cc = secondTail.Last().gameObject.AddComponent<CentipedeController>();
+            cc.SetDirection(-_direction);
+            var list = secondTail.ToList();
+            list.RemoveAt(list.Count - 1);
+            list.Reverse();
+            cc.SetTail(list.ToArray());
+            cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
         }
-        else
+    }
+
+    private IEnumerator MoveCentipede()
+    {
+        yield return new WaitForSeconds(0.001f);
+        WallComponent wc = FieldController.Instance.GetNearestPoint(_thisTransform.position);
+        _thisTransform.position = wc.Position;
+
+        WallComponent newPoint = FieldController.Instance.GetNextPointInDirection(wc, ref _direction);
+        _wayPoints.Add(newPoint.Position);
+        MoveTail();
+
+        while(true)
         {
-            _lastDot = new Dot(_thisTransform.position, direction, ID);
+            newPoint = FieldController.Instance.GetNextPointInDirection(newPoint, ref _direction);
+            _wayPoints.Add(newPoint.Position);
+            yield return StartCoroutine
+                (MoveInterpolation(_thisTransform,newPoint.Position, positionUpdateTime));
+            _thisTransform.position = newPoint.Position;
+            MoveTail();
+        }
+
+    }
+
+    private void AddNewWayPoint(Vector2 position)
+    {
+        _wayPoints.Add(position);
+
+        RemoveExcessPoint();
+    }
+
+    private void RemoveExcessPoint()
+    {
+        while (_wayPoints.Count > _sectionCount)
+            _wayPoints.RemoveAt(0);
+    }
+
+    private void MoveTail()
+    {
+        int waysCount = _wayPoints.Count;
+        Vector3 tmpPoint;
+        for (int i = 0; i < waysCount && i < _sectionCount; i++)
+        {
+            tmpPoint = _wayPoints[waysCount - 1 - i];
+
+            if(tail[i] != null)
+                StartCoroutine(MoveInterpolation(tail[i], tmpPoint, positionUpdateTime));
         }
     }
 
-    private IEnumerator GoDown()
+    private IEnumerator MoveInterpolation(Transform transf, Vector3 target, float time)
     {
-        Vector3 downPosition = _thisTransform.position - new Vector3(0, 0.5f);
-        _direction = Vector2.down;
-
-        AddNewRotationPoint(_direction);
-
-        while (_thisTransform.position.y > downPosition.y)
+        float startTimeValue = time;
+        Vector3 startPosition = transf.position;
+        while (time >= 0)
         {
-            _thisTransform.Translate(_direction * speed * Time.deltaTime);
+            transf.position = Vector3.Lerp(startPosition, target, 1.0f - (time / startTimeValue));
+            time -= Time.deltaTime;
             yield return null;
         }
-
-        _thisTransform.position = downPosition;
-        yield break;
     }
 
-    private IEnumerator GoRight()
+    public void OnDeath()
     {
-        RaycastHit2D hit;
-        yield return StartCoroutine(GoDown());
-        _direction = Vector2.right;
+        StopAllCoroutines();
 
-        AddNewRotationPoint(_direction);
-
-        hit = Physics2D.Raycast(_thisTransform.position, _direction, 0.2f);
-        while (!hit)
+        if (tail.Length > 0)
         {
-            _thisTransform.Translate(_direction * speed * Time.deltaTime);
-            hit = Physics2D.Raycast(_thisTransform.position, _direction, 0.2f);
-            yield return null;
-        }
-        _currentCoroutine = StartCoroutine(GoLeft());
-        yield break;
-    }
+            Transform nextHead = tail[0];
 
-    private IEnumerator GoLeft()
-    {
-        RaycastHit2D hit;
-        yield return StartCoroutine(GoDown());
-        _direction = Vector2.left;
-
-        AddNewRotationPoint(_direction);
-        
-        hit = Physics2D.Raycast(_thisTransform.position, _direction, 0.2f);
-        while (!hit)
-        {
-            _thisTransform.Translate(_direction * speed * Time.deltaTime);
-            hit = Physics2D.Raycast(_thisTransform.position, _direction, 0.2f);
-            yield return null;
+            CentipedeController cc = nextHead.gameObject.AddComponent<CentipedeController>();
+            cc.SetDirection(_direction);
+            var list = tail.ToList();
+            list.RemoveAt(0);
+            cc.SetTail(list.ToArray());
+            cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
         }
-        _currentCoroutine = StartCoroutine(GoRight());
-        yield break;
+
+        Destroy(this.gameObject);
     }
 }

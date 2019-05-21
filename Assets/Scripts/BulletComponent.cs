@@ -13,11 +13,11 @@ public class BulletComponent : MonoBehaviour {
         _camera = Camera.main;
         _thisTransform = transform;
     }
-
+    
     private void OnTriggerEnter2D(Collider2D col)
     {
         DamageableObject DamageObj = col.GetComponent<DamageableObject>();
-        if(DamageObj != null)
+        if (DamageObj != null)
         {
             DamageObj.Damage(_damage);
             Destroy(this.gameObject); 
