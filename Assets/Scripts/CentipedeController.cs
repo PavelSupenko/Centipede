@@ -15,8 +15,14 @@ public class CentipedeController : MonoBehaviour {
     private int _sectionCount;
     private Vector2 _direction = Vector2.right;
 
+    public static List<CentipedeController> controllers;
+
     private void Awake()
     {
+        if(controllers == null)
+            controllers = new List<CentipedeController>();
+
+        controllers.Add(this);
         _wayPoints = new List<Vector3>();
         _thisTransform = transform;
         _thisSection = GetComponent<CentipedeSection>();
@@ -39,6 +45,11 @@ public class CentipedeController : MonoBehaviour {
     private void Start()
     {
         StartCoroutine(MoveCentipede());
+    }
+
+    public void StopMoving()
+    {
+        StopAllCoroutines();
     }
 
     public void SetDirection(Vector2 d)
@@ -163,6 +174,7 @@ public class CentipedeController : MonoBehaviour {
             cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
         }
 
+        controllers.Remove(this);
         Destroy(this.gameObject);
     }
 }

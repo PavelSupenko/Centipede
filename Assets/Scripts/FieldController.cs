@@ -9,6 +9,7 @@ public class FieldController : MonoBehaviour {
     [SerializeField] private GameObject _wallPrefab;
     [SerializeField] private GameObject _emptyWallPrefab;
     [SerializeField] private Transform _wallsParent;
+    [SerializeField] private UIController _uiController;
     private float _cellSize;
     private int extraCellsCount = 10;
     private int indexOfFirstRow = 2;
@@ -16,6 +17,7 @@ public class FieldController : MonoBehaviour {
     [Range(0f,1f)] public float Probability;
 
     public Matrix<WallComponent> FieldMatrix;
+
     private static FieldController _instance;
     public static FieldController Instance { get { return _instance; } }
 
@@ -28,6 +30,11 @@ public class FieldController : MonoBehaviour {
     }
 
     void Start ()
+    {
+        BuildField();
+    }
+
+    private void BuildField()
     {
         FieldMatrix = new Matrix<WallComponent>(CellCount.x, CellCount.y + 10);
         Vector3 position;
@@ -60,7 +67,7 @@ public class FieldController : MonoBehaviour {
                 FieldMatrix.SetValueTo(i, j, wc);
             }
 
-            for(int j = CellCount.y; j < CellCount.y + extraCellsCount; j++)
+            for (int j = CellCount.y; j < CellCount.y + extraCellsCount; j++)
             {
                 position = _camera.ViewportToWorldPoint(new Vector3(i * shiftX + shiftX / 2, j * shiftY + shiftY / 2, 5));
                 GameObject go = Instantiate(
@@ -100,7 +107,7 @@ public class FieldController : MonoBehaviour {
     public void CreateWall(Vector3 position)
     {
         GameObject instance = Instantiate(Resources.Load("BlockR", typeof(GameObject))) as GameObject;
-        WallComponent pointWc = FieldController.Instance.GetNearestPoint(position);
+        WallComponent pointWc = GetNearestPoint(position);
         pointWc.SetValue(true);
         instance.transform.position = pointWc.Position;
         FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
@@ -121,6 +128,11 @@ public class FieldController : MonoBehaviour {
                 {
                     return FieldMatrix.GetValueFor(n, m - 1);
                 }
+                else if(m - 1 < 0)
+                {
+                    _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    return FieldMatrix.GetValueFor(n, m);
+                }
                 else if(n + 1 < FieldMatrix.ColumnCount)
                 {
                     return FieldMatrix.GetValueFor(n + 1, m);
@@ -137,9 +149,14 @@ public class FieldController : MonoBehaviour {
             else
             {
                 direction = -direction;
-                if (m - 1 > 0 && !FieldMatrix.GetValueFor(n, m - 1).IsWall)
+                if (m - 1 >= 0 && !FieldMatrix.GetValueFor(n, m - 1).IsWall)
                 {
                     return FieldMatrix.GetValueFor(n, m - 1);
+                }
+                else if(m - 1 < 0)
+                {
+                    _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    return FieldMatrix.GetValueFor(n, m);
                 }
                 else if(n - 1 > 0)
                 {
