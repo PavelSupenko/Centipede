@@ -21,12 +21,6 @@ public class CentipedeSection : MonoBehaviour {
             Head.Split(SectionIndex);
 
             FieldController.Instance.CreateWall(_thisTransform.position);
-
-            //GameObject instance = Instantiate(Resources.Load("BlockR", typeof(GameObject))) as GameObject;
-            //WallComponent pointWc = FieldController.Instance.GetNearestPoint(_thisTransform.position);
-            //pointWc.SetValue(true);
-            //instance.transform.position = pointWc.Position;
-            //FieldController.Instance.FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
         }
         Destroy(this.gameObject);
     }

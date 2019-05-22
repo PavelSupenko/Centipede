@@ -11,9 +11,10 @@ public class FieldController : MonoBehaviour {
     [SerializeField] private Transform _wallsParent;
     [SerializeField] private UIController _uiController;
     private float _cellSize;
-    private int extraCellsCount = 10;
-    private int indexOfFirstRow = 2;
+    private int extraCellsCount = 2;
+    private int indexOfFirstRow;
     public Vector2Int CellCount;
+    public Vector3 CellSize { get { return new Vector3(_cellSize, _cellSize, _cellSize); } }
     [Range(0f,1f)] public float Probability;
 
     public Matrix<WallComponent> FieldMatrix;
@@ -32,10 +33,23 @@ public class FieldController : MonoBehaviour {
     void Start ()
     {
         BuildField();
+        SetCentipedeSize();
+    }
+
+    private void SetCentipedeSize()
+    {
+        Vector3 size = CellSize * 0.35f;
+        CentipedeController head = CentipedeController.controllers.First();
+        Transform[] tail = head.tail;
+        head.transform.localScale = size;
+
+        foreach (Transform t in tail)
+            t.localScale = size;
     }
 
     private void BuildField()
     {
+        indexOfFirstRow = CellCount.y / 10;
         FieldMatrix = new Matrix<WallComponent>(CellCount.x, CellCount.y + 10);
         Vector3 position;
         _cellSize = (_camera.ViewportToWorldPoint(new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / CellCount.x;

@@ -24,4 +24,9 @@ public class Matrix<T> where T:MonoBehaviour {
     {
         return _matrix[n, m];
     }
+
+    public T Last()
+    {
+        return _matrix[ColumnCount - 1, RowCount - 1];
+    }
 }

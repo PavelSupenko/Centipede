@@ -12,6 +12,8 @@ public class UIController : MonoBehaviour {
     [SerializeField] private GameObject _startWindow;
     [SerializeField] private Transform _centipede;
     [SerializeField] private GameObject _mainController;
+    [SerializeField] private AudioController _audioController;
+    [SerializeField] private AudioClip _endClip;
 
     public static UIController Instance { get { return _instance; } }
     private static UIController _instance;
@@ -26,12 +28,14 @@ public class UIController : MonoBehaviour {
         if (SaveClass.IsFirstScene)
         {
             _startWindow.SetActive(true);
+            _audioController.OnStart();
         }
         else
         {
             _startWindow.SetActive(false);
             _mainController.SetActive(true);
             _centipede.gameObject.SetActive(true);
+            _audioController.OnPlay();
         }
     }
 
@@ -41,27 +45,30 @@ public class UIController : MonoBehaviour {
         if(arr != null && arr.Count <= 0)
         {
             ShowEndGameWindow(EndType.Comleted);
-            SaveClass.SavePoints(_mainController.GetComponent<PointsController>().Points);
         }
     }
 
-    public void ShowEndGameWindow(EndType type)
+    public void ShowEndGameWindow(EndType type, string str = "")
     {
         _endWindow.SetActive(true);
-        switch(type)
+        switch (type)
         {
             case EndType.Comleted:
-                _logoText.text = "Completed";
+                _logoText.text = "Completed" + str; ;
                 break;
             case EndType.Failure:
-                _logoText.text = "Game Over";
+                _logoText.text = "Game Over" + str;
                 break;
         }
         _maxPointsText.text = SaveClass.GetMaxPointValue().ToString();
         _mainController.SetActive(false);
         var arr = CentipedeController.controllers;
         foreach (CentipedeController cc in arr)
-            cc.StopAllCoroutines();
+            if(cc != null)
+                cc.StopAllCoroutines();
+
+        _audioController.GetComponent<AudioSource>().PlayOneShot(_endClip);
+        SaveClass.SavePoints(_mainController.GetComponent<PointsController>().Points);
     }
 
     public void Retry()

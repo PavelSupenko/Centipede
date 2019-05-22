@@ -6,6 +6,7 @@ public class WallComponent : MonoBehaviour {
 
     private Vector2Int _thisFieldPosition;
     private Animator _thisAnimator;
+    private AudioSource _thisAudio;
     private BoxCollider2D _thisCollider;
     private Transform _thisTransform;
     private bool _isWall;
@@ -13,7 +14,7 @@ public class WallComponent : MonoBehaviour {
 	void Start () {
         _thisTransform = transform;
         _thisTransform.rotation *= Quaternion.Euler(0,0,90 * Random.Range(0,4));
-
+        _thisAudio = GetComponent<AudioSource>();
         _thisAnimator = GetComponent<Animator>();
         _thisCollider = gameObject.GetComponent<BoxCollider2D>();
     }
@@ -51,6 +52,7 @@ public class WallComponent : MonoBehaviour {
     {
         _thisCollider.enabled = false;
         IsWall = false;
+        _thisAudio.Play();
         _thisAnimator.SetTrigger("Explode");
     }
 

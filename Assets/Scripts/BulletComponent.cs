@@ -6,12 +6,18 @@ public class BulletComponent : MonoBehaviour {
 
     [SerializeField] private int _damage;
     private Camera _camera;
+    private BoxCollider2D _thisCollider;
     private Transform _thisTransform;
+    private LinearMove _thisMove;
+    private Animator _thisAnimator;
 
     private void Start()
     {
         _camera = Camera.main;
         _thisTransform = transform;
+        _thisCollider = GetComponent<BoxCollider2D>();
+        _thisMove = GetComponent<LinearMove>();
+        _thisAnimator = GetComponent<Animator>();
     }
     
     private void OnTriggerEnter2D(Collider2D col)
@@ -20,7 +26,7 @@ public class BulletComponent : MonoBehaviour {
         if (DamageObj != null)
         {
             DamageObj.Damage(_damage);
-            Destroy(this.gameObject); 
+            OnDeath();
         }
     }
 
@@ -30,5 +36,13 @@ public class BulletComponent : MonoBehaviour {
         {
             Destroy(this.gameObject);
         }
+    }
+
+    private void OnDeath()
+    {
+        _thisCollider.enabled = false;
+        _thisMove.speed = 0;
+        _thisAnimator.SetTrigger("Explode");
+        Destroy(this.gameObject, 0.5f);
     }
 }
