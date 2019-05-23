@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum MoveType { Vertical, Horizontal, Both};
-//public enum DeviceType { KeyBoard, Touch};
 public class PlayerMoveController : MonoBehaviour {
 
     [SerializeField] private Transform _playerTransform;
@@ -11,7 +10,6 @@ public class PlayerMoveController : MonoBehaviour {
     [SerializeField] private Camera _camera;
     public float speed = 50;
     public MoveType moveType;
-    //public DeviceType inputType;
     	
 	void Update () {
         

@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class BugComponent : MonoBehaviour {
 
-    [Range(0, 1)]
-    public float probability;
-    public float timeBwCreating;
     private Transform _thisTransform;
     private Animator _thisAnimator;
     private BoxCollider2D _thisCollider;
     private Camera _camera;
+
+    [Range(0, 1)]
+    public float probability;
+    public float timeBwCreating;
 
     private void Awake()
     {
@@ -36,7 +37,7 @@ public class BugComponent : MonoBehaviour {
 
             number = ((float)Random.Range(0, 100)) / 100f;
             if (number <= probability)
-                FieldController.Instance.CreateWall(_thisTransform.position);
+                Messenger<Vector3>.Broadcast(EventStrings.CREATE_WALL, _thisTransform.position);
         }
     }
 

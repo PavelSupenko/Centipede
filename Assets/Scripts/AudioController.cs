@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AudioController : MonoBehaviour {
 
@@ -14,18 +12,34 @@ public class AudioController : MonoBehaviour {
     }
     
     private void Start () {
-        OnStart();
+        Messenger.AddListener(EventStrings.START_SOFT_MUSIC, StartSoft);
+        Messenger.AddListener(EventStrings.START_HARD_MUSIC, StartHard);
+        Messenger<AudioClip>.AddListener(EventStrings.PLAY_ONE_MUSIC, PlayOneShot);
+
+        StartSoft();
     }
 
-    public void OnStart()
+    public void PlayOneShot(AudioClip audio)
+    {
+        _audioSource.PlayOneShot(audio);
+    }
+
+    public void StartSoft()
     {
         _audioSource.clip = _fightSorf;
         _audioSource.Play();
     }
 
-    public void OnPlay()
+    public void StartHard()
     {
         _audioSource.clip = _fightHard;
         _audioSource.Play();
+    }
+
+    private void OnDestroy()
+    {
+        Messenger.RemoveListener(EventStrings.START_SOFT_MUSIC, StartSoft);
+        Messenger.RemoveListener(EventStrings.START_HARD_MUSIC, StartHard);
+        Messenger<AudioClip>.RemoveListener(EventStrings.PLAY_ONE_MUSIC, PlayOneShot);
     }
 }

@@ -51,11 +51,9 @@ public class WallComponent : MonoBehaviour {
     public void OnDeath()
     {
         _thisCollider.enabled = false;
-        //IsWall = false;
         _thisAudio.Play();
-        //SetValue(false);
-        FieldController.Instance.CreateEmptyWall(_thisTransform.position);
         _thisAnimator.SetTrigger("Explode");
+        Messenger<Vector3>.Broadcast(EventStrings.CREATE_EMPTY_WALL, _thisTransform.position);
     }
 
     public void SetValue(bool isWall)

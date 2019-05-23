@@ -19,8 +19,7 @@ public class CentipedeSection : MonoBehaviour {
         if (Head != null)
         {
             Head.Split(SectionIndex);
-
-            FieldController.Instance.CreateWall(_thisTransform.position);
+            Messenger<Vector3>.Broadcast(EventStrings.CREATE_WALL, _thisTransform.position);
         }
         Destroy(this.gameObject);
     }

@@ -851,7 +851,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 470259324}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 6.72, z: -0.10621429}
+  m_LocalPosition: {x: 3.53, y: 5.53, z: -0.10621429}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1145,24 +1145,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e98e21d93ccf7b4d916c12a4744fb8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeCoefficient: 0.4
-  positionUpdateTime: 0.2
-  tail:
-  - {fileID: 1522879240}
-  - {fileID: 1766002142}
-  - {fileID: 249667988}
-  - {fileID: 1680971046}
-  - {fileID: 2105480444}
-  - {fileID: 1451636859}
-  - {fileID: 305074867}
-  - {fileID: 1301977513}
-  - {fileID: 892587062}
-  - {fileID: 1547896265}
-  - {fileID: 484995154}
-  - {fileID: 2113980986}
-  - {fileID: 1816181567}
-  - {fileID: 2127021450}
-  - {fileID: 1379276680}
 --- !u!212 &643840670
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1459,6 +1441,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1300675248}
+  - {fileID: 1105969788}
   - {fileID: 1088289552}
   m_Father: {fileID: 513050295}
   m_RootOrder: 1
@@ -2172,7 +2155,7 @@ RectTransform:
   m_Children:
   - {fileID: 2139052408}
   m_Father: {fileID: 758560962}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2297,6 +2280,81 @@ CanvasRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1088289551}
+  m_CullTransparentMesh: 0
+--- !u!1 &1105969787
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1105969788}
+  - component: {fileID: 1105969790}
+  - component: {fileID: 1105969789}
+  m_Layer: 5
+  m_Name: MaxPointsLogo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1105969788
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1105969787}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 758560962}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1.274, y: -164.5}
+  m_SizeDelta: {x: 492.4, y: 87.8}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1105969789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1105969787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 24e0959f338ae0549aab6de8f1204d6d, type: 3}
+    m_FontSize: 14
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 1
+    m_MaxSize: 200
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'MAX POINTS: 0'
+--- !u!222 &1105969790
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1105969787}
   m_CullTransparentMesh: 0
 --- !u!1 &1195337989
 GameObject:
@@ -7474,7 +7532,6 @@ MonoBehaviour:
   _camera: {fileID: 519420031}
   speed: 6
   moveType: 1
-  inputType: 1
 --- !u!4 &1530789271
 Transform:
   m_ObjectHideFlags: 0
@@ -7506,11 +7563,10 @@ MonoBehaviour:
     type: 2}
   _wallsParent: {fileID: 808757565}
   _uiController: {fileID: 1775258397}
-  _spawner: {fileID: 470259325}
   _startSectionCount: 10
-  _positionUpdateTime: 0.2
+  _positionUpdateTime: 0.15
   CellCount: {x: 20, y: 25}
-  Probability: 0.08
+  Probability: 0.09
 --- !u!114 &1530789273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7547,7 +7603,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1530789269}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8b0e9daac73cd04bbe4aada5c0f626a, type: 3}
   m_Name: 
@@ -7636,6 +7692,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1775258398}
   - component: {fileID: 1775258397}
+  - component: {fileID: 1775258399}
   m_Layer: 0
   m_Name: UIController
   m_TagString: Untagged
@@ -7655,13 +7712,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _logoText: {fileID: 1029767274}
+  _maxPointsTextStart: {fileID: 1105969789}
   _maxPointsText: {fileID: 316010900}
   _endWindow: {fileID: 693672098}
   _startWindow: {fileID: 758560961}
   _centipede: {fileID: 1241225737}
   _mainController: {fileID: 1530789269}
-  _audioController: {fileID: 44189434}
-  _endClip: {fileID: 8300000, guid: f59223b3b4d971347b880bbc513bf111, type: 3}
+  _saveController: {fileID: 1775258399}
 --- !u!4 &1775258398
 Transform:
   m_ObjectHideFlags: 0
@@ -7675,6 +7732,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1775258399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1775258396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b46a7a153ca19d43aff084b7b65fbd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1816181567 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4910351879025970, guid: fc7d3d4e580180e49adf30d5dca88c8b,

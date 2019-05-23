@@ -8,10 +8,20 @@ public class CentipedeSpawner : MonoBehaviour {
     [SerializeField] private Transform _parentTransform;
     [SerializeField] private GameObject _sectionPrefab;
 
+    private void Awake()
+    {
+        Messenger<int, float>.AddListener(EventStrings.CREATE_NEW_CENTIPEDE, CreateNewCentipede);
+    }
+
+    private void OnDestroy()
+    {
+        Messenger<int, float>.RemoveListener(EventStrings.CREATE_NEW_CENTIPEDE, CreateNewCentipede);
+    }
+
     public void CreateNewCentipede(int sectionCount, float positionUpdateTime)
     {
         List<Transform> sections = new List<Transform>();
-        Vector3 size = FieldController.Instance.CellSize * 0.35f;
+        Vector3 size = GlobalVariables.CELL_SIZE * 0.35f;
         for (int i = 0; i < sectionCount - 1; i++)
         {
             GameObject go = Instantiate

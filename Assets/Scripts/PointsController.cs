@@ -7,17 +7,19 @@ public class PointsController : MonoBehaviour {
 
     [SerializeField] private Text HPText;
     [SerializeField] private Text PointsText;
-    [SerializeField] private UIController _uiController;
     private int _hp = 100;
     private int _points = 0;
-    private static PointsController _instance;
 
     private void Awake()
     {
-        if (_instance == null)
-            _instance = this;
-        else
-            Destroy(this.gameObject);
+        Messenger<int>.AddListener(EventStrings.UP_HEALTH, UpHealth);
+        Messenger<int>.AddListener(EventStrings.UP_POINTS, UpPoints);
+    }
+
+    private void OnDestroy()
+    {
+        Messenger<int>.RemoveListener(EventStrings.UP_HEALTH, UpHealth);
+        Messenger<int>.RemoveListener(EventStrings.UP_POINTS, UpPoints);
     }
 
     private void Start()
@@ -28,11 +30,6 @@ public class PointsController : MonoBehaviour {
     public void OnValuesChanged()
     {
         PrintValues();
-    }
-
-    public static PointsController Instance
-    {
-        get { return _instance; }
     }
 
     public int Points
@@ -56,7 +53,7 @@ public class PointsController : MonoBehaviour {
         set
         {
             if(value < 0)
-                _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                Messenger.Broadcast(EventStrings.GAME_OVER);
 
             _hp = Mathf.Clamp(value, 0, 100);
             OnValuesChanged();

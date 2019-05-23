@@ -22,7 +22,7 @@ public class DamageableObject : MonoBehaviour {
     private IEnumerator Death()
     {
         gameObject.SendMessage("OnDeath");
-        PointsController.Instance.UpPoints(_pointForDeath);
+        Messenger<int>.Broadcast(EventStrings.UP_POINTS, _pointForDeath);
         yield return new WaitForSeconds(_deathTime);
     }
 }
