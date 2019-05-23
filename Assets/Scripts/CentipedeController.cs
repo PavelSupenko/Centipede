@@ -5,17 +5,19 @@ using System.Linq;
 using System;
 
 public class CentipedeController : MonoBehaviour {
-    [Range(0.25f, 0.6f)]
     public float timeCoefficient;
     public float positionUpdateTime;
     public Transform[] tail;
     private List<Vector3> _wayPoints;
     private Transform _thisTransform;
+    private Camera _mainCamera;
     private CentipedeSection _thisSection;
     private int _sectionCount;
     private Vector2 _direction = Vector2.right;
 
     public static List<CentipedeController> controllers;
+    public float TimeCoefficient { get { return timeCoefficient; } set { timeCoefficient = value; } }
+    public float PositionUpdateTime { get { return positionUpdateTime; } set { positionUpdateTime = value; } }
 
     private void Awake()
     {
@@ -25,6 +27,7 @@ public class CentipedeController : MonoBehaviour {
         controllers.Add(this);
         _wayPoints = new List<Vector3>();
         _thisTransform = transform;
+        _mainCamera = Camera.main;
         _thisSection = GetComponent<CentipedeSection>();
         if (_thisSection != null)
             _thisSection.enabled = false;
@@ -39,6 +42,17 @@ public class CentipedeController : MonoBehaviour {
                 tmpSection.Head = this;
                 tmpSection.SectionIndex = i;
             }
+        }
+    }
+
+
+
+    private void Update()
+    {
+        if (_mainCamera.WorldToViewportPoint(_thisTransform.position).y < 0)
+        {
+            foreach (Transform t in tail)
+                Destroy(t.gameObject);
         }
     }
 
@@ -104,17 +118,6 @@ public class CentipedeController : MonoBehaviour {
             for (int i = 0; i < secondTail.Length; i++)
                 cc.AddNewWayPoint(secondTail[secondTail.Length - 1 - i].position);
         }
-
-        //if (secondTail.Length > 0)
-        //{
-        //    CentipedeController cc = secondTail.Last().gameObject.AddComponent<CentipedeController>();
-        //    cc.SetDirection(-_direction);
-        //    Transform[] tmpArray = new Transform[secondTail.Length - 1];
-        //    Array.Copy(secondTail, tmpArray, secondTail.Length - 1);
-        //    tmpArray.Reverse();
-        //    cc.SetTail(tmpArray);
-        //    cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
-        //}
     }
 
     private IEnumerator StartMove()
@@ -172,18 +175,20 @@ public class CentipedeController : MonoBehaviour {
 
     private IEnumerator MoveInterpolation(Transform transf, Vector3 target, float time)
     {
-        if (transf == null)
+        if (transf == null || target == null)
             yield break;
 
         float startTimeValue = time;
         Vector3 startPosition = transf.position;
         while (time >= 0)
         {
+            if (transf == null || target == null)
+                yield break;
+
             transf.position = Vector3.Lerp(startPosition, target, 1.0f - (time / startTimeValue));
             time -= Time.deltaTime;
             yield return null;
         }
-        transf.position = target;
     }
 
     public void OnDeath()
@@ -204,5 +209,14 @@ public class CentipedeController : MonoBehaviour {
 
         controllers.Remove(this);
         Destroy(this.gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            PointsController.Instance.HP -= 10;
+            OnDeath();
+        }
     }
 }

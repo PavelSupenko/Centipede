@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum MoveType { Vertical, Horizontal, Both};
-public enum DeviceType { KeyBoard, Touch};
+//public enum DeviceType { KeyBoard, Touch};
 public class PlayerMoveController : MonoBehaviour {
 
     [SerializeField] private Transform _playerTransform;
@@ -11,7 +11,7 @@ public class PlayerMoveController : MonoBehaviour {
     [SerializeField] private Camera _camera;
     public float speed = 50;
     public MoveType moveType;
-    public DeviceType inputType;
+    //public DeviceType inputType;
     	
 	void Update () {
         
@@ -53,18 +53,15 @@ public class PlayerMoveController : MonoBehaviour {
     {
         float axisHor;
 
-        switch(inputType)
-        {
-            case DeviceType.KeyBoard:
-                axisHor = Input.GetAxis("Horizontal");
-                break;
-            case DeviceType.Touch:
-                axisHor = Mathf.Round(Input.acceleration.x * 100) / 100f;
-                if (Mathf.Abs(axisHor) < 0.15f)
-                    return Vector3.zero;
-                break;
-            default: axisHor = Input.GetAxis("Horizontal"); break;
-        }
+#if UNITY_ANDROID
+        axisHor = Mathf.Round(Input.acceleration.x * 100) / 100f;
+        if (Mathf.Abs(axisHor) < 0.1f)
+            return Vector3.zero;
+#elif UNITY_EDITOR
+        axisHor = Input.GetAxis("Horizontal");
+#else
+        axisHor = Input.GetAxis("Horizontal");
+#endif
 
         if (axisHor > 0 && playerPosIntoCamera.x <= 1)
         {

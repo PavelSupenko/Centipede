@@ -10,6 +10,9 @@ public class FieldController : MonoBehaviour {
     [SerializeField] private GameObject _emptyWallPrefab;
     [SerializeField] private Transform _wallsParent;
     [SerializeField] private UIController _uiController;
+    [SerializeField] private CentipedeSpawner _spawner;
+    [SerializeField] private int _startSectionCount;
+    [SerializeField] private float _positionUpdateTime;
     private float _cellSize;
     private int extraCellsCount = 2;
     private int indexOfFirstRow;
@@ -33,20 +36,28 @@ public class FieldController : MonoBehaviour {
     void Start ()
     {
         BuildField();
-        SetCentipedeSize();
+        CreateNewCentipede();
     }
 
-    private void SetCentipedeSize()
+    public void CreateNewCentipede()
     {
-        Vector3 size = CellSize * 0.35f;
-        CentipedeController head = CentipedeController.controllers.First();
-        Transform[] tail = head.tail;
-        head.transform.localScale = size;
+        //if(_startSectionCount <= 0)
+        //    _uiController.ShowEndGameWindow(UIController.EndType.Comleted);
 
-        foreach (Transform t in tail)
-            t.localScale = size;
+        //_spawner.CreateNewCentipede(_startSectionCount, _positionUpdateTime);
+        //_startSectionCount-=2;
+        //_positionUpdateTime *= 0.8f;
+
+        if (_startSectionCount > 0)
+        {
+            _spawner.CreateNewCentipede(_startSectionCount, _positionUpdateTime);
+            _startSectionCount -= 2;
+            _positionUpdateTime *= 0.8f;
+            return;
+        }
+        _uiController.ShowEndGameWindow(UIController.EndType.Comleted);
     }
-
+    
     private void BuildField()
     {
         indexOfFirstRow = CellCount.y / 10;
@@ -118,15 +129,39 @@ public class FieldController : MonoBehaviour {
         return GetNextPointInDirection(wc.FieldCoordinates.x, wc.FieldCoordinates.y, ref direction);
     }
 
+    public void CreateEmptyWall(Vector3 position)
+    {
+        GameObject instance = Instantiate(_emptyWallPrefab);
+        WallComponent pointWc = GetNearestPoint(position);
+        pointWc.SetValue(false);
+        instance.transform.position = pointWc.Position;
+        FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
+    }
+
     public void CreateWall(Vector3 position)
     {
-        GameObject instance = Instantiate(Resources.Load("BlockR", typeof(GameObject))) as GameObject;
+        GameObject instance = Instantiate(_wallPrefab);
         WallComponent pointWc = GetNearestPoint(position);
         pointWc.SetValue(true);
         instance.transform.position = pointWc.Position;
         FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
+
+        //GameObject instance = Instantiate(Resources.Load("BlockR", typeof(GameObject))) as GameObject;
+        //WallComponent pointWc = GetNearestPoint(position);
+        //pointWc.SetValue(true);
+        //instance.transform.position = pointWc.Position;
+        //FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
     }
-    
+
+    private void Update()
+    {
+        var arr = CentipedeController.controllers;
+        if (arr != null && arr.Count <= 0)
+        {
+            CreateNewCentipede();
+        }
+    }
+
     public WallComponent GetNextPointInDirection(int n, int m, ref Vector2 direction)
     {
         if (direction.Equals(Vector2.left))
@@ -144,7 +179,8 @@ public class FieldController : MonoBehaviour {
                 }
                 else if(m - 1 < 0)
                 {
-                    _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    //_uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    //CreateNewCentipede();
                     return FieldMatrix.GetValueFor(n, m);
                 }
                 else if(n + 1 < FieldMatrix.ColumnCount)
@@ -169,7 +205,8 @@ public class FieldController : MonoBehaviour {
                 }
                 else if(m - 1 < 0)
                 {
-                    _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    //_uiController.ShowEndGameWindow(UIController.EndType.Failure);
+                    //CreateNewCentipede();
                     return FieldMatrix.GetValueFor(n, m);
                 }
                 else if(n - 1 > 0)

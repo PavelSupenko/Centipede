@@ -39,15 +39,6 @@ public class UIController : MonoBehaviour {
         }
     }
 
-    private void Update()
-    {
-        var arr = CentipedeController.controllers;
-        if(arr != null && arr.Count <= 0)
-        {
-            ShowEndGameWindow(EndType.Comleted);
-        }
-    }
-
     public void ShowEndGameWindow(EndType type, string str = "")
     {
         _endWindow.SetActive(true);

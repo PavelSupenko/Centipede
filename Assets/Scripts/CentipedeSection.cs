@@ -24,5 +24,4 @@ public class CentipedeSection : MonoBehaviour {
         }
         Destroy(this.gameObject);
     }
-
 }

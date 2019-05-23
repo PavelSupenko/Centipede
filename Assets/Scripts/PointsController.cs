@@ -7,6 +7,7 @@ public class PointsController : MonoBehaviour {
 
     [SerializeField] private Text HPText;
     [SerializeField] private Text PointsText;
+    [SerializeField] private UIController _uiController;
     private int _hp = 100;
     private int _points = 0;
     private static PointsController _instance;
@@ -54,6 +55,9 @@ public class PointsController : MonoBehaviour {
         }
         set
         {
+            if(value < 0)
+                _uiController.ShowEndGameWindow(UIController.EndType.Failure);
+
             _hp = Mathf.Clamp(value, 0, 100);
             OnValuesChanged();
         }
