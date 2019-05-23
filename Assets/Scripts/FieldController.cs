@@ -52,19 +52,18 @@ public class FieldController : MonoBehaviour {
     private void BuildField()
     {
         indexOfFirstRow = CellCount.y / 10;
-        FieldMatrix = new Matrix<WallComponent>(CellCount.x, CellCount.y + 10);
+        FieldMatrix = new Matrix<WallComponent>(CellCount.x, CellCount.y + extraCellsCount);
         Vector3 position;
         float tempCellSize = (_camera.ViewportToWorldPoint
             (new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / CellCount.x;
         GlobalVariables.CELL_SIZE = new Vector3(tempCellSize, tempCellSize, tempCellSize);
-        float cellSize = tempCellSize * 0.4f;
         float shiftX = 1f / CellCount.x;
         float shiftY = 1f / CellCount.y;
         float randomNumber;
 
         for (int i = 0; i < CellCount.x; i++)
         {
-            for (int j = 0; j < CellCount.y; j++)
+            for (int j = 0; j < CellCount.y - 1; j++)
             {
                 if (j >= indexOfFirstRow)
                     randomNumber = Random.value;
@@ -78,14 +77,14 @@ public class FieldController : MonoBehaviour {
                     Quaternion.identity,
                     _wallsParent);
 
-                go.transform.localScale = new Vector3(cellSize, cellSize);
+                go.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
                 WallComponent wc = go.GetComponent<WallComponent>();
                 wc.SetFieldValues(i, j, randomNumber <= Probability);
 
                 FieldMatrix.SetValueTo(i, j, wc);
             }
 
-            for (int j = CellCount.y; j < CellCount.y + extraCellsCount; j++)
+            for (int j = CellCount.y - 1; j < CellCount.y + extraCellsCount; j++)
             {
                 position = _camera.ViewportToWorldPoint(new Vector3(i * shiftX + shiftX / 2, j * shiftY + shiftY / 2, 5));
                 GameObject go = Instantiate(
@@ -94,7 +93,7 @@ public class FieldController : MonoBehaviour {
                     Quaternion.identity,
                     _wallsParent);
 
-                go.transform.localScale = new Vector3(cellSize, cellSize);
+                go.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
                 WallComponent wc = go.GetComponent<WallComponent>();
                 wc.SetFieldValues(i, j, false);
 
@@ -128,15 +127,21 @@ public class FieldController : MonoBehaviour {
         WallComponent pointWc = GetNearestPoint(position);
         pointWc.SetValue(false);
         instance.transform.position = pointWc.Position;
+        instance.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
         FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
     }
 
     public void CreateWall(Vector3 position)
     {
-        GameObject instance = Instantiate(_wallPrefab);
         WallComponent pointWc = GetNearestPoint(position);
+
+        if (pointWc.FieldCoordinates.y < indexOfFirstRow || pointWc.IsWall)
+            return;
+
+        GameObject instance = Instantiate(_wallPrefab);
         pointWc.SetValue(true);
         instance.transform.position = pointWc.Position;
+        instance.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
         FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
     }
 

@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 
+
 public class AudioController : MonoBehaviour {
 
+    // Audio Clips for main menu and game process
     [SerializeField] private AudioClip _fightHard;
     [SerializeField] private AudioClip _fightSorf;
     private AudioSource _audioSource;
@@ -11,6 +13,8 @@ public class AudioController : MonoBehaviour {
         _audioSource = GetComponent<AudioSource>();
     }
     
+    // Adding event listeners and starting playing
+    // the main menu music
     private void Start () {
         Messenger.AddListener(EventStrings.START_SOFT_MUSIC, StartSoft);
         Messenger.AddListener(EventStrings.START_HARD_MUSIC, StartHard);
@@ -24,18 +28,26 @@ public class AudioController : MonoBehaviour {
         _audioSource.PlayOneShot(audio);
     }
 
+    // Methods of changing music
     public void StartSoft()
     {
         _audioSource.clip = _fightSorf;
-        _audioSource.Play();
+        StartPlaying();
     }
 
     public void StartHard()
     {
         _audioSource.clip = _fightHard;
-        _audioSource.Play();
+        StartPlaying();
     }
 
+    private void StartPlaying()
+    {
+        if (!_audioSource.isPlaying)
+            _audioSource.Play();
+    }
+
+    // Removing listeners on destroy
     private void OnDestroy()
     {
         Messenger.RemoveListener(EventStrings.START_SOFT_MUSIC, StartSoft);

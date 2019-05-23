@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pointForDeath: 20
-  _health: 20
+  _health: 15
   _deathTime: 0.7
 --- !u!114 &114812870988081920
 MonoBehaviour:

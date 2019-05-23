@@ -8,6 +8,7 @@ public class DamageableObject : MonoBehaviour {
     [SerializeField] private int _health;
     [SerializeField] private float _deathTime;
     private Coroutine _deathRoutine;
+    private bool _isDead = false;
     
     public void Damage(int damage)
     {
@@ -21,8 +22,12 @@ public class DamageableObject : MonoBehaviour {
 
     private IEnumerator Death()
     {
-        gameObject.SendMessage("OnDeath");
-        Messenger<int>.Broadcast(EventStrings.UP_POINTS, _pointForDeath);
-        yield return new WaitForSeconds(_deathTime);
+        if (!_isDead)
+        {
+            _isDead = true;
+            gameObject.SendMessage("OnDeath");
+            Messenger<int>.Broadcast(EventStrings.UP_POINTS, _pointForDeath);
+            yield return new WaitForSeconds(_deathTime);
+        }
     }
 }

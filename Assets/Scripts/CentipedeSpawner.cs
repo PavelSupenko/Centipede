@@ -18,10 +18,13 @@ public class CentipedeSpawner : MonoBehaviour {
         Messenger<int, float>.RemoveListener(EventStrings.CREATE_NEW_CENTIPEDE, CreateNewCentipede);
     }
 
+    // 
     public void CreateNewCentipede(int sectionCount, float positionUpdateTime)
     {
         List<Transform> sections = new List<Transform>();
         Vector3 size = GlobalVariables.CELL_SIZE * 0.35f;
+
+        // Creating tail of the new centipede
         for (int i = 0; i < sectionCount - 1; i++)
         {
             GameObject go = Instantiate
@@ -30,6 +33,8 @@ public class CentipedeSpawner : MonoBehaviour {
             go.transform.localScale = size;
         }
 
+        // Creating the head of centipede
+        // Setting direction, tail and speed (time btw changing position) 
         GameObject head = Instantiate
                 (_sectionPrefab, _spawnTransform.position, Quaternion.identity, _parentTransform);
         head.transform.localScale = size;

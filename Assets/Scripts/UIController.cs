@@ -59,6 +59,16 @@ public class UIController : MonoBehaviour {
         ShowEndGameWindow(EndType.Comleted);
     }
 
+    public void OnGamePaused()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void OnGamePlayed()
+    {
+        Time.timeScale = 1;
+    }
+
     public void ShowEndGameWindow(EndType type)
     {
         _endWindow.SetActive(true);

@@ -10,7 +10,9 @@ public class BulletComponent : MonoBehaviour {
     private Transform _thisTransform;
     private LinearMove _thisMove;
     private Animator _thisAnimator;
+    private bool _isAlreadyDamaged = false;
 
+    // Initializing
     private void Start()
     {
         _camera = Camera.main;
@@ -19,17 +21,21 @@ public class BulletComponent : MonoBehaviour {
         _thisMove = GetComponent<LinearMove>();
         _thisAnimator = GetComponent<Animator>();
     }
-    
+
+    // Giving damage to object if it`s have
+    // DamageableObject component
     private void OnTriggerEnter2D(Collider2D col)
     {
         DamageableObject DamageObj = col.GetComponent<DamageableObject>();
-        if (DamageObj != null)
+        if (DamageObj != null && !_isAlreadyDamaged)
         {
+            _isAlreadyDamaged = true;
             DamageObj.Damage(_damage);
             OnDeath();
         }
     }
 
+    //Remove the bullet if it`s above the screen
     private void Update()
     {
         if(_camera.WorldToViewportPoint(_thisTransform.position).y > 1.5)
@@ -38,9 +44,11 @@ public class BulletComponent : MonoBehaviour {
         }
     }
 
+    // Starting Explode animation
+    // and destroying object after it
     private void OnDeath()
     {
-        _thisCollider.enabled = false;
+        //_thisCollider.enabled = false;
         _thisMove.speed = 0;
         _thisAnimator.SetTrigger("Explode");
         Destroy(this.gameObject, 0.5f);

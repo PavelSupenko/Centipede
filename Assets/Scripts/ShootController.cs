@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ShootController : MonoBehaviour {
 
@@ -13,10 +14,23 @@ public class ShootController : MonoBehaviour {
 	void Update () {
 		if(Input.GetMouseButton(0) && !IsCharging)
         {
-            GameObject go = Instantiate(_bulletPrefab, _playerTransform.position, Quaternion.identity, _bulletParent);
-            StartCoroutine(Charging());
+#if UNITY_ANDROID
+            if (EventSystem.current.IsPointerOverGameObject(Input.touches[0].fingerId) &&
+            EventSystem.current.currentSelectedGameObject == null)
+            {
+                Shoot();
+            }
+#else
+            Shoot();
+#endif
         }
-	}
+    }
+
+    private void Shoot()
+    {
+        GameObject go = Instantiate(_bulletPrefab, _playerTransform.position, Quaternion.identity, _bulletParent);
+        StartCoroutine(Charging());
+    }
 
     private IEnumerator Charging()
     {

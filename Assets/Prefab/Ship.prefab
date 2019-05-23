@@ -99,8 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 853454bb26f94ec48ae99a18c24b956b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  probability: 0.129
-  timeBwCreating: 0.1
+  probability: 0.3
+  timeBwCreating: 0.3
 --- !u!114 &114749238543779032
 MonoBehaviour:
   m_ObjectHideFlags: 1

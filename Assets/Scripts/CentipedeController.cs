@@ -8,7 +8,7 @@ public class CentipedeController : MonoBehaviour {
     private float timeCoefficient;
     private float positionUpdateTime;
     private int _sectionCount;
-    private Transform[] tail;
+    public Transform[] tail;
     private List<Vector3> _wayPoints;
     private Transform _thisTransform;
     private FieldController _fieldController;
@@ -47,9 +47,7 @@ public class CentipedeController : MonoBehaviour {
             }
         }
     }
-
-
-
+    
     private void Update()
     {
         if (_mainCamera.WorldToViewportPoint(_thisTransform.position).y < 0)
@@ -61,7 +59,10 @@ public class CentipedeController : MonoBehaviour {
 
     private void Start()
     {
-        StartCoroutine(MoveCentipede());
+        if (controllers.Count <= 1)
+            StartCoroutine(StartMove());
+        else
+            StartCoroutine(MoveCentipede());
     }
 
     public void StopMoving()
@@ -86,18 +87,21 @@ public class CentipedeController : MonoBehaviour {
         CentipedeSection tmpSection;
         for (int i = 0; i < _sectionCount; i++)
         {
-            tmpSection = tail[i].GetComponent<CentipedeSection>();
-            tmpSection.Head = this;
-            tmpSection.SectionIndex = i;
+            if (tail[i] != null)
+            {
+                tmpSection = tail[i].GetComponent<CentipedeSection>();
+                tmpSection.Head = this;
+                tmpSection.SectionIndex = i;
+            }
         }
     }
 
     public void Split(int deadSectionIndex)
     {
         StopAllCoroutines();
-
+        
         Transform[] firstTail = tail.Take(deadSectionIndex).ToArray();
-        Transform[] secondTail = tail.Skip(deadSectionIndex + 1).ToArray();
+        Transform[] secondTail = tail.Skip(deadSectionIndex).ToArray();
 
         tail = firstTail;
         _sectionCount = tail.Length;
@@ -112,14 +116,19 @@ public class CentipedeController : MonoBehaviour {
             Array.Copy(secondTail, tmpArray, secondTail.Length);
             List<Transform> list = tmpArray.ToList();
             list.RemoveAt(0);
+            
             cc.SetTail(list.ToArray());
             cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
+
+            for (int i = secondTail.Length - 1; i >= 0; i--)
+                cc.AddNewWayPoint(secondTail[i].position);
+            cc.AddNewWayPoint(secondTail.First().position);
         }
     }
 
     private IEnumerator StartMove()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.01f);
         StartCoroutine(MoveCentipede());
     }
     
@@ -128,13 +137,13 @@ public class CentipedeController : MonoBehaviour {
         WallComponent wc = _fieldController.GetNearestPoint(_thisTransform.position);
         _thisTransform.position = wc.Position;
         WallComponent newPoint = _fieldController.GetNextPointInDirection(wc, ref _direction);
-        _wayPoints.Add(newPoint.Position);
+        AddNewWayPoint(newPoint.Position);
         MoveTail();
 
         while(true)
         {
             newPoint = _fieldController.GetNextPointInDirection(newPoint, ref _direction);
-            _wayPoints.Add(newPoint.Position);
+            AddNewWayPoint(newPoint.Position);
             yield return StartCoroutine
                 (MoveInterpolation(_thisTransform,newPoint.Position, positionUpdateTime));
             _thisTransform.position = newPoint.Position;
@@ -185,24 +194,15 @@ public class CentipedeController : MonoBehaviour {
             time -= Time.deltaTime;
             yield return null;
         }
+
+        transf.position = target;
     }
 
     public void OnDeath()
     {
         StopAllCoroutines();
-
-        if (tail.Length > 0 && tail[0].transform != null)
-        {
-            Transform nextHead = tail[0];
-
-            CentipedeController cc = nextHead.gameObject.AddComponent<CentipedeController>();
-            cc.SetDirection(_direction);
-            var list = tail.ToList();
-            list.RemoveAt(0);
-            cc.SetTail(list.ToArray());
-            cc.SetUpdateTime(positionUpdateTime - positionUpdateTime * timeCoefficient);
-        }
-
+        Messenger<Vector3>.Broadcast(EventStrings.CREATE_WALL, _thisTransform.position);
+        Split(0);
         controllers.Remove(this);
         Destroy(this.gameObject);
     }
@@ -214,5 +214,10 @@ public class CentipedeController : MonoBehaviour {
             Messenger<int>.Broadcast(EventStrings.UP_HEALTH, -10);
             OnDeath();
         }
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 }

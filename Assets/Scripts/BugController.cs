@@ -8,7 +8,7 @@ public class BugController : MonoBehaviour {
     [SerializeField] private Transform _bugParent;
     public float pauseTime;
     
-    private void OnEnable()
+    private void Start()
     {
         StartCoroutine(StartBug());
     }
@@ -18,6 +18,7 @@ public class BugController : MonoBehaviour {
         StopAllCoroutines();
     }
 
+    // Sapwning ships on random X position above the screen
     private IEnumerator StartBug()
     {
         Vector3 pos;

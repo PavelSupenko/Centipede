@@ -8,7 +8,8 @@ public class SaveController : MonoBehaviour
 
     public void SavePoints(int p)
     {
-        PlayerPrefs.SetInt(SaveString, p);
+        if(PlayerPrefs.GetInt(SaveString) < p)
+            PlayerPrefs.SetInt(SaveString, p);
     }
 
     public int GetMaxPointValue()
