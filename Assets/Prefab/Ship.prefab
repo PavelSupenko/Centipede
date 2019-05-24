@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4729232dbae1144a8da44af2f4c67e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pointForDeath: 25
+  _pointForDeath: 200
   _health: 5
   _deathTime: 0
 --- !u!212 &212719373011683308
