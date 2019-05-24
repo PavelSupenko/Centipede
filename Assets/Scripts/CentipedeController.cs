@@ -4,28 +4,36 @@ using UnityEngine;
 using System.Linq;
 using System;
 
+// Controller of centipede. Attached to all heads of centipedes
 public class CentipedeController : MonoBehaviour {
-    private float timeCoefficient;
-    private float positionUpdateTime;
-    private int _sectionCount;
-    public Transform[] tail;
+
     private List<Vector3> _wayPoints;
     private Transform _thisTransform;
     private FieldController _fieldController;
     private Camera _mainCamera;
     private CentipedeSection _thisSection;
     private Vector2 _direction = Vector2.right;
+    private float timeCoefficient;
+    private float positionUpdateTime;
+    private int _sectionCount;
 
-    public static List<CentipedeController> controllers;
+    // The tail of centipede
+    public Transform[] tail;
+    // How many times faster splitted parts than original
     public float TimeCoefficient { get { return timeCoefficient; } set { timeCoefficient = value; } }
+    //Time in seconds of changing centipede position
     public float PositionUpdateTime { get { return positionUpdateTime; } set { positionUpdateTime = value; } }
+    // The move direction
     public Vector2 Direction { get { return _direction; } }
-
+    
+    // Array that contains all centipede heads
+    public static List<CentipedeController> controllers;
+    
+    // Initializing variables and creating tail
     private void Awake()
     {
-        if (controllers == null)
+        if(controllers == null)
             controllers = new List<CentipedeController>();
-
         controllers.Add(this);
         _wayPoints = new List<Vector3>();
         _thisTransform = transform;
@@ -48,15 +56,6 @@ public class CentipedeController : MonoBehaviour {
         }
     }
     
-    private void Update()
-    {
-        if (_mainCamera.WorldToViewportPoint(_thisTransform.position).y < 0)
-        {
-            foreach (Transform t in tail)
-                Destroy(t.gameObject);
-        }
-    }
-
     private void Start()
     {
         if (controllers.Count <= 1)
@@ -96,6 +95,7 @@ public class CentipedeController : MonoBehaviour {
         }
     }
 
+    // Splitting the centipede in two relative the deadSectionIndex
     public void Split(int deadSectionIndex)
     {
         StopAllCoroutines();
@@ -131,9 +131,13 @@ public class CentipedeController : MonoBehaviour {
         yield return new WaitForSeconds(0.01f);
         StartCoroutine(MoveCentipede());
     }
-    
+
+    // Saving the way centipede head have done and
+    // moving the tail along this path
     private IEnumerator MoveCentipede()
     {
+        if (_fieldController == null)
+            yield break;
         WallComponent wc = _fieldController.GetNearestPoint(_thisTransform.position);
         _thisTransform.position = wc.Position;
         WallComponent newPoint = _fieldController.GetNextPointInDirection(wc, ref _direction);
@@ -152,6 +156,7 @@ public class CentipedeController : MonoBehaviour {
 
     }
 
+    // Adding new way point into centipede path
     public void AddNewWayPoint(Vector2 position)
     {
         _wayPoints.Add(position);
@@ -159,12 +164,15 @@ public class CentipedeController : MonoBehaviour {
         RemoveExcessPoint();
     }
 
+    // If path contains more points 
+    // that enough -- remode excess points
     private void RemoveExcessPoint()
     {
         while (_wayPoints.Count > _sectionCount)
             _wayPoints.RemoveAt(0);
     }
 
+    // Moving tail along the head path
     private void MoveTail()
     {
         int waysCount = _wayPoints.Count;
@@ -178,6 +186,7 @@ public class CentipedeController : MonoBehaviour {
         }
     }
 
+    // Position Interpolaion btw two points on field matrix
     private IEnumerator MoveInterpolation(Transform transf, Vector3 target, float time)
     {
         if (transf == null || target == null)
@@ -198,15 +207,18 @@ public class CentipedeController : MonoBehaviour {
         transf.position = target;
     }
 
+    // Creating the wall on the current position
     public void OnDeath()
     {
         StopAllCoroutines();
         Messenger<Vector3>.Broadcast(EventStrings.CREATE_WALL, _thisTransform.position);
-        Split(0);
+        if(tail.Length > 0)
+            Split(0);
         controllers.Remove(this);
         Destroy(this.gameObject);
     }
 
+    // Damage the player on collision
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

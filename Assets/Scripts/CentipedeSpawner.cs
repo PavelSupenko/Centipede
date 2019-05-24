@@ -18,7 +18,7 @@ public class CentipedeSpawner : MonoBehaviour {
         Messenger<int, float>.RemoveListener(EventStrings.CREATE_NEW_CENTIPEDE, CreateNewCentipede);
     }
 
-    // 
+    // Method for creating new centipede with defined body length and speed
     public void CreateNewCentipede(int sectionCount, float positionUpdateTime)
     {
         List<Transform> sections = new List<Transform>();

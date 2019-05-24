@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Linear moving in one direction with speed
 public enum Direction { Up, Down, Right, Left};
 public class LinearMove : MonoBehaviour {
 
+    private Transform _thisTransform;
     public Direction direction;
     public float speed;
-    private Transform _thisTransform;
 
     private void Start()
     {
@@ -24,7 +25,6 @@ public class LinearMove : MonoBehaviour {
             case Direction.Right: movement = Vector2.right; break;
             default: movement = Vector2.up; break;
         }
-
         _thisTransform.Translate(movement * speed * Time.deltaTime);
 	}
 }

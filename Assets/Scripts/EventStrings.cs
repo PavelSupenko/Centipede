@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Global strings to use with Event Listeners
 public static class EventStrings {
 
     public static string START_SOFT_MUSIC = "START_SOFT_MUSIC";
@@ -18,4 +19,6 @@ public static class EventStrings {
 
     public static string GAME_OVER = "GAME_OVER";
     public static string GAME_COMPLETED = "GAME_COMPLETED";
+
+    public static string STOP_ALL_CENTIPEDE = "GAME_COMPLETED";
 }

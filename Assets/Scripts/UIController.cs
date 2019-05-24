@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+// The script controls UI Elements (text, endgame and start windows)
 public class UIController : MonoBehaviour {
     public enum EndType { Comleted, Failure};
     [SerializeField] private Text _logoText;
@@ -15,6 +16,7 @@ public class UIController : MonoBehaviour {
     [SerializeField] private GameObject _mainController;
     [SerializeField] private SaveController _saveController;
 
+    // Listeners for over and completed game
     private void Awake()
     {
         Messenger.AddListener(EventStrings.GAME_OVER, OnGameOver);
@@ -30,10 +32,16 @@ public class UIController : MonoBehaviour {
     private void Start()
     {
         InitializeWindows();
+        OnGamePlayed();
     }
 
+    // Show start window if app started for the
+    // first time
+    // Doesn`t show start window if we`ve already
+    // completed previous level
     private void InitializeWindows()
     {
+        GlobalVariables.IS_GAME_OVER = false;
         if (GlobalVariables.IS_FIRST_SCENE)
         {
             _startWindow.SetActive(true);
@@ -44,21 +52,32 @@ public class UIController : MonoBehaviour {
         {
             _startWindow.SetActive(false);
             _mainController.SetActive(true);
-            _centipede.gameObject.SetActive(true);
             Messenger.Broadcast(EventStrings.START_HARD_MUSIC);
         }
     }
 
     public void OnGameOver()
     {
-        ShowEndGameWindow(EndType.Failure);
+        if (!GlobalVariables.IS_GAME_OVER)
+        {
+            OnGamePaused();
+            ShowEndGameWindow(EndType.Failure);
+            GlobalVariables.IS_GAME_OVER = true;
+        }
     }
 
     public void OnGameComplete()
     {
-        ShowEndGameWindow(EndType.Comleted);
+        if (!GlobalVariables.IS_GAME_OVER)
+        {
+            OnGamePaused();
+            ShowEndGameWindow(EndType.Comleted);
+            GlobalVariables.IS_GAME_OVER = true;
+        }
     }
-
+    
+    // Pair methods to manipulate time scale
+    // when the game paused
     public void OnGamePaused()
     {
         Time.timeScale = 0;
@@ -69,6 +88,8 @@ public class UIController : MonoBehaviour {
         Time.timeScale = 1;
     }
 
+    // Show final window with "Retry" button
+    // and maximum of points you`ve collected
     public void ShowEndGameWindow(EndType type)
     {
         _endWindow.SetActive(true);
@@ -83,9 +104,10 @@ public class UIController : MonoBehaviour {
         }
         _maxPointsText.text = _saveController.GetMaxPointValue().ToString();
         _mainController.SetActive(false);
+
         var arr = CentipedeController.controllers;
         foreach (CentipedeController cc in arr)
-            if(cc != null)
+            if (cc != null)
                 cc.StopAllCoroutines();
 
         _saveController.SavePoints(_mainController.GetComponent<PointsController>().Points);

@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Components that is attached to all field points
+// Contents properties:
+// 1. Point position
+// 2. Coordinate into field matrix
+// 3. Is this point an obstacle
 public class WallComponent : MonoBehaviour {
 
     private Vector2Int _thisFieldPosition;
@@ -48,6 +53,8 @@ public class WallComponent : MonoBehaviour {
         }
     }
 
+    // Explode wall and create new empty point
+    // instead of it
     public void OnDeath()
     {
         _thisCollider.enabled = false;

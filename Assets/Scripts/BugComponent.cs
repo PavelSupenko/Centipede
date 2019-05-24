@@ -7,7 +7,6 @@ public class BugComponent : MonoBehaviour {
     private Transform _thisTransform;
     private Animator _thisAnimator;
     private BoxCollider2D _thisCollider;
-    private Camera _camera;
 
     // Settings of probability to spawn rocks
     // with pause time
@@ -22,7 +21,6 @@ public class BugComponent : MonoBehaviour {
         _thisAnimator = GetComponent<Animator>();
         _thisTransform = transform;
         _thisCollider = gameObject.GetComponent<BoxCollider2D>();
-        _camera = Camera.main;
         StartCoroutine(CreatingWalls());
     }
 
@@ -33,12 +31,6 @@ public class BugComponent : MonoBehaviour {
         float number;
         while(true)
         {
-            Vector3 coord = _camera.WorldToViewportPoint(_thisTransform.position);
-            if (coord.y < 0.2)
-            {
-                yield break;
-            }
-
             yield return new WaitForSeconds(timeBwCreating);
 
             number = ((float)Random.Range(0, 100)) / 100f;

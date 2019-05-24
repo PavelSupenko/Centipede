@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controllers to save max points value into PlayerPrefs
 public class SaveController : MonoBehaviour
 {
-    private string SaveString = "PointSave";
+    private string _saveString = "PointSave";
 
     public void SavePoints(int p)
     {
-        if(PlayerPrefs.GetInt(SaveString) < p)
-            PlayerPrefs.SetInt(SaveString, p);
+        if(PlayerPrefs.GetInt(_saveString) < p)
+            PlayerPrefs.SetInt(_saveString, p);
     }
 
     public int GetMaxPointValue()
     {
-        return PlayerPrefs.GetInt(SaveString);
+        return PlayerPrefs.GetInt(_saveString);
     }
 }

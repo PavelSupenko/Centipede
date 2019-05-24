@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+// Controls the spawning of ships (bugs in original game)
+// that leave new rocks on their ways
 public class BugController : MonoBehaviour {
 
     [SerializeField] private GameObject _bugPrefab;
@@ -18,7 +20,7 @@ public class BugController : MonoBehaviour {
         StopAllCoroutines();
     }
 
-    // Sapwning ships on random X position above the screen
+    // Sapwning ships on random X position abroad the screen
     private IEnumerator StartBug()
     {
         Vector3 pos;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Printing points and HP on display
 public class PointsController : MonoBehaviour {
 
     [SerializeField] private Text HPText;
@@ -10,6 +11,7 @@ public class PointsController : MonoBehaviour {
     private int _hp = 100;
     private int _points = 0;
 
+    // Initializing Listeners to manipulate points
     private void Awake()
     {
         Messenger<int>.AddListener(EventStrings.UP_HEALTH, UpHealth);
@@ -45,6 +47,7 @@ public class PointsController : MonoBehaviour {
         }
     }
 
+    // Call the game over window if HP < 0
     public int HP {
         get
         {

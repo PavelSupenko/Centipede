@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Supported class to store some objects into matrix structure
+// We will be store the points of game field with it
+
 public class Matrix<T> where T:MonoBehaviour {
     private T[,] _matrix;
     public int RowCount { get; private set; }

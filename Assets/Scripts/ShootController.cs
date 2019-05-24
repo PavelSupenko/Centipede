@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// The controller that Instantiate bullets when screen
+// is pressed
 public class ShootController : MonoBehaviour {
 
     [SerializeField] private GameObject _bulletPrefab;
@@ -14,24 +16,28 @@ public class ShootController : MonoBehaviour {
 	void Update () {
 		if(Input.GetMouseButton(0) && !IsCharging)
         {
-#if UNITY_ANDROID
+#if UNITY_EDITOR || UNITY_STANDALONE
+            if(EventSystem.current.currentSelectedGameObject == null)
+                Shoot();
+#elif UNITY_ANDROID || UNITY_IOS
             if (EventSystem.current.IsPointerOverGameObject(Input.touches[0].fingerId) &&
             EventSystem.current.currentSelectedGameObject == null)
             {
                 Shoot();
             }
-#else
-            Shoot();
 #endif
         }
     }
 
+    // Instantiating new bullet and starting charging process
     private void Shoot()
     {
         GameObject go = Instantiate(_bulletPrefab, _playerTransform.position, Quaternion.identity, _bulletParent);
         StartCoroutine(Charging());
     }
 
+    // The charging method that wait some time and
+    // allows us to shoot again
     private IEnumerator Charging()
     {
         IsCharging = true;

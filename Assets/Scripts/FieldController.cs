@@ -12,11 +12,16 @@ public class FieldController : MonoBehaviour {
     [SerializeField] private UIController _uiController;
     [SerializeField] private int _startSectionCount;
     [SerializeField] private float _positionUpdateTime;
+
+    // Number of cells that will be above the screen
+    // to start centipede abroad the screen
     private int extraCellsCount = 2;
     private int indexOfFirstRow;
-    public Vector2Int CellCount;
-    [Range(0f,1f)] public float Probability;
 
+    // Field dimensions
+    public Vector2Int CellCount;
+    // Probability of creating the wall
+    [Range(0f,1f)] public float Probability;
     public Matrix<WallComponent> FieldMatrix;
 
     private void Awake()
@@ -37,8 +42,12 @@ public class FieldController : MonoBehaviour {
         CreateNewCentipede();
     }
 
+    // Method to create new centipede
+    // shorter than previous and faster
     public void CreateNewCentipede()
     {
+        // Complete the game when number of
+        // cells of next creating centipede < 0
         if (_startSectionCount > 0)
         {
             Messenger<int, float>.Broadcast(EventStrings.CREATE_NEW_CENTIPEDE, _startSectionCount, _positionUpdateTime);
@@ -46,9 +55,12 @@ public class FieldController : MonoBehaviour {
             _positionUpdateTime *= 0.8f;
             return;
         }
+
         Messenger.Broadcast(EventStrings.GAME_COMPLETED);
+        CentipedeController.controllers = null;
     }
     
+    // Constructing game field
     private void BuildField()
     {
         indexOfFirstRow = CellCount.y / 10;
@@ -84,6 +96,7 @@ public class FieldController : MonoBehaviour {
                 FieldMatrix.SetValueTo(i, j, wc);
             }
 
+            // Creating extra cells without walls
             for (int j = CellCount.y - 1; j < CellCount.y + extraCellsCount; j++)
             {
                 position = _camera.ViewportToWorldPoint(new Vector3(i * shiftX + shiftX / 2, j * shiftY + shiftY / 2, 5));
@@ -102,6 +115,7 @@ public class FieldController : MonoBehaviour {
         }
     }
 
+    // Get nearest field point to this position
     public WallComponent GetNearestPoint(Vector2 position)
     {
         IEnumerable<WallComponent> values = FieldMatrix.Field.Cast<WallComponent>();
@@ -116,21 +130,13 @@ public class FieldController : MonoBehaviour {
         return nearestPoint;
     }
 
+    // Overloading method of getting nearest point
     public WallComponent GetNextPointInDirection(WallComponent wc, ref Vector2 direction)
     {
         return GetNextPointInDirection(wc.FieldCoordinates.x, wc.FieldCoordinates.y, ref direction);
     }
 
-    public void CreateEmptyWall(Vector3 position)
-    {
-        GameObject instance = Instantiate(_emptyWallPrefab);
-        WallComponent pointWc = GetNearestPoint(position);
-        pointWc.SetValue(false);
-        instance.transform.position = pointWc.Position;
-        instance.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
-        FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
-    }
-
+    // Creating wall on the nearest point to this position
     public void CreateWall(Vector3 position)
     {
         WallComponent pointWc = GetNearestPoint(position);
@@ -145,6 +151,19 @@ public class FieldController : MonoBehaviour {
         FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
     }
 
+    // Creating empty wall on the nearest point to this position
+    public void CreateEmptyWall(Vector3 position)
+    {
+        GameObject instance = Instantiate(_emptyWallPrefab);
+        WallComponent pointWc = GetNearestPoint(position);
+        pointWc.SetValue(false);
+        instance.transform.position = pointWc.Position;
+        instance.transform.localScale = GlobalVariables.CELL_SIZE * 0.5f;
+        FieldMatrix.SetValueTo(pointWc.FieldCoordinates.x, pointWc.FieldCoordinates.y, pointWc);
+    }
+
+    // Creating new centipede when
+    // array of heads become empty
     private void Update()
     {
         var arr = CentipedeController.controllers;
@@ -154,6 +173,9 @@ public class FieldController : MonoBehaviour {
         }
     }
 
+    // The main logics of centipede moving
+    // 1. move in direction if there is no obstacle
+    // 2. go down if there is an obstacle and changing direction
     public WallComponent GetNextPointInDirection(int n, int m, ref Vector2 direction)
     {
         if (direction.Equals(Vector2.left))

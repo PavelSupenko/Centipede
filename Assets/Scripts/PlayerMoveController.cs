@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// The controller that controls the player movement
+// in Vertical, Horizontal or both directions
+// There is different mechanics for different build
+// target platforms:
+// 1. Use WASD or arrow keys to move player on you computer
+// 2. Use accelerometer to control player on your Android or IPhine
 public enum MoveType { Vertical, Horizontal, Both};
 public class PlayerMoveController : MonoBehaviour {
 
@@ -50,15 +56,12 @@ public class PlayerMoveController : MonoBehaviour {
     private Vector3 GetHorizontalMovement(Vector3 playerPosIntoCamera)
     {
         float axisHor;
-
-#if UNITY_ANDROID
+#if UNITY_EDITOR || UNITY_STANDALONE
+        axisHor = Input.GetAxis("Horizontal");
+#elif UNITY_ANDROID || UNITY_IOS
         axisHor = Mathf.Round(Input.acceleration.x * 100) / 100f;
         if (Mathf.Abs(axisHor) < 0.1f)
             return Vector3.zero;
-#elif UNITY_EDITOR
-        axisHor = Input.GetAxis("Horizontal");
-#else
-        axisHor = Input.GetAxis("Horizontal");
 #endif
 
         if (axisHor > 0 && playerPosIntoCamera.x <= 1)

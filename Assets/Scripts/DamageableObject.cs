@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class DamageableObject : MonoBehaviour {
 
+    // Points that will be given to player if this object
+    // will be hit
     [SerializeField] private int _pointForDeath;
     [SerializeField] private int _health;
     [SerializeField] private float _deathTime;
+
+    // Some variables to avoid situation when we are trying
+    // to kill already killed object
     private Coroutine _deathRoutine;
     private bool _isDead = false;
     
+    // If health count < 0 -- kill this object
     public void Damage(int damage)
     {
         if (_deathRoutine != null)
@@ -20,6 +26,7 @@ public class DamageableObject : MonoBehaviour {
             _deathRoutine = StartCoroutine(Death());
     }
 
+    // Sending message "OnDeath" to this object`s components
     private IEnumerator Death()
     {
         if (!_isDead)
