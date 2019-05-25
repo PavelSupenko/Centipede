@@ -32,6 +32,7 @@ public class FieldController : MonoBehaviour {
 
     private void OnDestroy()
     {
+        CentipedeController.controllers = null;
         Messenger<Vector3>.RemoveListener(EventStrings.CREATE_EMPTY_WALL, CreateEmptyWall);
         Messenger<Vector3>.RemoveListener(EventStrings.CREATE_WALL, CreateWall);
      }
