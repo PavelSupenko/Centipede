@@ -60,7 +60,7 @@ public class PlayerMoveController : MonoBehaviour {
         axisHor = Input.GetAxis("Horizontal");
 #elif UNITY_ANDROID || UNITY_IOS
         axisHor = Mathf.Round(Input.acceleration.x * 100) / 100f;
-        if (Mathf.Abs(axisHor) < 0.1f)
+        if (Mathf.Abs(axisHor) < 0.08f)
             return Vector3.zero;
 #endif
 

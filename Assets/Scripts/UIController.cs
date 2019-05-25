@@ -10,10 +10,12 @@ public class UIController : MonoBehaviour {
     [SerializeField] private Text _logoText;
     [SerializeField] private Text _maxPointsTextStart;
     [SerializeField] private Text _maxPointsText;
+    [SerializeField] private Text _yourPointsText;
     [SerializeField] private GameObject _endWindow;
     [SerializeField] private GameObject _startWindow;
     [SerializeField] private Transform _centipede;
     [SerializeField] private GameObject _mainController;
+    [SerializeField] private PointsController _pointController;
     [SerializeField] private SaveController _saveController;
 
     // Listeners for over and completed game
@@ -103,6 +105,7 @@ public class UIController : MonoBehaviour {
                 break;
         }
         _maxPointsText.text = _saveController.GetMaxPointValue().ToString();
+        _yourPointsText.text = _pointController.Points.ToString();
         _mainController.SetActive(false);
 
         var arr = CentipedeController.controllers;

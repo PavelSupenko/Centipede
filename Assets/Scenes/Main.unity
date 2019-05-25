@@ -779,7 +779,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -68.00003, y: 68.000015}
+  m_AnchoredPosition: {x: -68, y: 68}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &217451546
@@ -7888,7 +7888,7 @@ MonoBehaviour:
   _playerTransform: {fileID: 584871973}
   _playerRigid: {fileID: 584871975}
   _camera: {fileID: 519420031}
-  speed: 6
+  speed: 10
   moveType: 1
 --- !u!4 &1530789271
 Transform:
@@ -7922,7 +7922,7 @@ MonoBehaviour:
   _wallsParent: {fileID: 808757565}
   _uiController: {fileID: 1775258397}
   _startSectionCount: 15
-  _positionUpdateTime: 0.15
+  _positionUpdateTime: 0.1
   cellCount: 25
   Probability: 0.09
 --- !u!114 &1530789273
@@ -8226,10 +8226,12 @@ MonoBehaviour:
   _logoText: {fileID: 1029767274}
   _maxPointsTextStart: {fileID: 1105969789}
   _maxPointsText: {fileID: 316010900}
+  _yourPointsText: {fileID: 1297103218}
   _endWindow: {fileID: 693672098}
   _startWindow: {fileID: 758560961}
   _centipede: {fileID: 1241225737}
   _mainController: {fileID: 1530789269}
+  _pointController: {fileID: 1530789274}
   _saveController: {fileID: 1775258399}
 --- !u!4 &1775258398
 Transform:
