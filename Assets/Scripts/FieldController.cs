@@ -17,9 +17,10 @@ public class FieldController : MonoBehaviour {
     // to start centipede abroad the screen
     private int extraCellsCount = 2;
     private int indexOfFirstRow;
-
     // Field dimensions
-    public Vector2Int CellCount;
+    private Vector2Int _cellCount;
+    // Min dimension of field
+    public int cellCount;
     // Probability of creating the wall
     [Range(0f,1f)] public float Probability;
     public Matrix<WallComponent> FieldMatrix;
@@ -64,19 +65,37 @@ public class FieldController : MonoBehaviour {
     // Constructing game field
     private void BuildField()
     {
-        indexOfFirstRow = CellCount.y / 10;
-        FieldMatrix = new Matrix<WallComponent>(CellCount.x, CellCount.y + extraCellsCount);
-        Vector3 position;
-        float tempCellSize = (_camera.ViewportToWorldPoint
-            (new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / CellCount.x;
-        GlobalVariables.CELL_SIZE = new Vector3(tempCellSize, tempCellSize, tempCellSize);
-        float shiftX = 1f / CellCount.x;
-        float shiftY = 1f / CellCount.y;
+        float ratio;
+        float tempCellSize;
         float randomNumber;
-
-        for (int i = 0; i < CellCount.x; i++)
+        float shiftX, shiftY;
+        Vector3 position;
+        if (Screen.width > Screen.height)
         {
-            for (int j = 0; j < CellCount.y - 1; j++)
+            _cellCount.y = cellCount;
+            ratio = ((float)Screen.width) / (float)Screen.height;
+            _cellCount.x = (int)(cellCount * ratio);
+            tempCellSize = (_camera.ViewportToWorldPoint
+            (new Vector3(0, 1)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).y / _cellCount.y;
+        }
+        else
+        {
+            _cellCount.x = cellCount;
+            ratio = ((float)Screen.height) / (float)Screen.width;
+            _cellCount.y = (int)(cellCount * ratio);
+            tempCellSize = (_camera.ViewportToWorldPoint
+            (new Vector3(1, 0)) - _camera.ViewportToWorldPoint(new Vector3(0, 0))).x / _cellCount.x;
+        }
+
+        indexOfFirstRow = _cellCount.y / 10;
+        FieldMatrix = new Matrix<WallComponent>(_cellCount.x, _cellCount.y + extraCellsCount);
+        GlobalVariables.CELL_SIZE = new Vector3(tempCellSize, tempCellSize, tempCellSize);
+        shiftX = 1f / _cellCount.x;
+        shiftY = 1f / _cellCount.y;
+
+        for (int i = 0; i < _cellCount.x; i++)
+        {
+            for (int j = 0; j < _cellCount.y - 1; j++)
             {
                 if (j >= indexOfFirstRow)
                     randomNumber = Random.value;
@@ -98,7 +117,7 @@ public class FieldController : MonoBehaviour {
             }
 
             // Creating extra cells without walls
-            for (int j = CellCount.y - 1; j < CellCount.y + extraCellsCount; j++)
+            for (int j = _cellCount.y - 1; j < _cellCount.y + extraCellsCount; j++)
             {
                 position = _camera.ViewportToWorldPoint(new Vector3(i * shiftX + shiftX / 2, j * shiftY + shiftY / 2, 5));
                 GameObject go = Instantiate(

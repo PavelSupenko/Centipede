@@ -7923,7 +7923,7 @@ MonoBehaviour:
   _uiController: {fileID: 1775258397}
   _startSectionCount: 15
   _positionUpdateTime: 0.15
-  CellCount: {x: 40, y: 20}
+  cellCount: 25
   Probability: 0.09
 --- !u!114 &1530789273
 MonoBehaviour:
