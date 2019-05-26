@@ -60,17 +60,18 @@ public class PlayerMoveController : MonoBehaviour {
         axisHor = Input.GetAxis("Horizontal");
 #elif UNITY_ANDROID || UNITY_IOS
         axisHor = Mathf.Round(Input.acceleration.x * 100) / 100f;
-        if (Mathf.Abs(axisHor) < 0.08f)
+        if (Mathf.Abs(axisHor) < (0.1f - GlobalVariables.SENSITIVITY * 0.1f))
             return Vector3.zero;
+        axisHor /= 3f;
 #endif
 
         if (axisHor > 0 && playerPosIntoCamera.x <= 1)
         {
-            return Vector3.right * speed * Time.deltaTime;
+            return Vector3.right * speed * Time.deltaTime * axisHor;
         }
         else if (axisHor < 0 && playerPosIntoCamera.x >= 0)
         {
-            return -Vector3.right * speed * Time.deltaTime;
+            return -Vector3.right * speed * Time.deltaTime * -axisHor;
         }
         return Vector3.zero;
     }

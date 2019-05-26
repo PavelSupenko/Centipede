@@ -6,6 +6,30 @@ using UnityEngine;
 public class SaveController : MonoBehaviour
 {
     private string _saveString = "PointSave";
+    private string _sensitivityString = "Sensitivity";
+    private string _difficultyString = "Difficulty";
+
+    public int GetDifficulty()
+    {
+        return PlayerPrefs.GetInt(_difficultyString);
+    }
+
+    public int GetSensitivity()
+    {
+        return PlayerPrefs.GetInt(_sensitivityString);
+    }
+
+    public void SaveDifficulty(int value)
+    {
+        PlayerPrefs.SetInt(_difficultyString, value);
+        GlobalVariables.DIFFICULTY = value;
+    }
+
+    public void SaveSensitivity(int value)
+    {
+        PlayerPrefs.SetInt(_sensitivityString, value);
+        GlobalVariables.SENSITIVITY = value;
+    }
 
     public void SavePoints(int p)
     {

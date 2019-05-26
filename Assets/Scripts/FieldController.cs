@@ -54,7 +54,7 @@ public class FieldController : MonoBehaviour {
         {
             Messenger<int, float>.Broadcast(EventStrings.CREATE_NEW_CENTIPEDE, _startSectionCount, _positionUpdateTime);
             _startSectionCount -= 2;
-            _positionUpdateTime *= 0.8f;
+            _positionUpdateTime *= 0.8f - GlobalVariables.DIFFICULTY * 0.025f;
             return;
         }
 
@@ -70,6 +70,7 @@ public class FieldController : MonoBehaviour {
         float randomNumber;
         float shiftX, shiftY;
         Vector3 position;
+        Probability = Probability + GlobalVariables.DIFFICULTY * 0.01f;
         if (Screen.width > Screen.height)
         {
             _cellCount.y = cellCount;

@@ -33,7 +33,8 @@ public class DamageableObject : MonoBehaviour {
         {
             _isDead = true;
             gameObject.SendMessage("OnDeath");
-            Messenger<int>.Broadcast(EventStrings.UP_POINTS, _pointForDeath);
+            Messenger<int>.Broadcast(EventStrings.UP_POINTS,
+                _pointForDeath + (GlobalVariables.DIFFICULTY + 5) * 3);
             yield return new WaitForSeconds(_deathTime);
         }
     }

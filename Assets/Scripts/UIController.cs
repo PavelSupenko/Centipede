@@ -13,16 +13,25 @@ public class UIController : MonoBehaviour {
     [SerializeField] private Text _yourPointsText;
     [SerializeField] private GameObject _endWindow;
     [SerializeField] private GameObject _startWindow;
+    [SerializeField] private Text _infoText;
+    [SerializeField] private Slider _difficultySlider;
+    [SerializeField] private Slider _sensitivitySlider;
     [SerializeField] private Transform _centipede;
     [SerializeField] private GameObject _mainController;
     [SerializeField] private PointsController _pointController;
     [SerializeField] private SaveController _saveController;
+    private TextAsset _previewText;
 
     // Listeners for over and completed game
     private void Awake()
     {
         Messenger.AddListener(EventStrings.GAME_OVER, OnGameOver);
         Messenger.AddListener(EventStrings.GAME_COMPLETED, OnGameComplete);
+        _previewText = Resources.Load("Readme") as TextAsset;
+        _infoText.text = _previewText.text;
+
+        _difficultySlider.value = _saveController.GetDifficulty();
+        _sensitivitySlider.value = _saveController.GetSensitivity();
     }
 
     private void OnDestroy()
@@ -57,7 +66,7 @@ public class UIController : MonoBehaviour {
             Messenger.Broadcast(EventStrings.START_HARD_MUSIC);
         }
     }
-
+    
     public void OnGameOver()
     {
         if (!GlobalVariables.IS_GAME_OVER)
@@ -90,6 +99,16 @@ public class UIController : MonoBehaviour {
         Time.timeScale = 1;
     }
 
+    public void OnSensitivityChanged()
+    {
+        _saveController.SaveSensitivity((int)_sensitivitySlider.value);
+    }
+
+    public void OnDifficultyChanged()
+    {
+        _saveController.SaveDifficulty((int)_difficultySlider.value);
+    }
+
     // Show final window with "Retry" button
     // and maximum of points you`ve collected
     public void ShowEndGameWindow(EndType type)
@@ -106,6 +125,7 @@ public class UIController : MonoBehaviour {
         }
         _maxPointsText.text = _saveController.GetMaxPointValue().ToString();
         _yourPointsText.text = _pointController.Points.ToString();
+        _difficultySlider.interactable = true;
         _mainController.SetActive(false);
 
         var arr = CentipedeController.controllers;
@@ -120,5 +140,16 @@ public class UIController : MonoBehaviour {
     {
         GlobalVariables.IS_FIRST_SCENE = false;
         SceneManager.LoadScene("Main");
+    }
+
+    public void MainMenu()
+    {
+        GlobalVariables.IS_FIRST_SCENE = true;
+        SceneManager.LoadScene("Main");
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 }
